@@ -72,29 +72,26 @@ export default function Home() {
         </div>
         <div className="relative z-10 flex min-h-screen items-center justify-center px-4 py-12 sm:py-16">
           <div className="w-full max-w-md">
-            <div className="rounded-2xl border border-white/20 bg-white/15 p-8 shadow-xl backdrop-blur-xl sm:p-10">
-              <div className="flex items-center justify-between gap-4 mb-8">
-                <img src="/icons/logo.png" alt="" className="h-10 w-auto object-contain sm:h-12" />
-                <div className="flex gap-2">
-                  <button
-                    type="button"
-                    onClick={() => setLocale("en")}
-                    className="btn-primary min-w-[100px] sm:min-w-[120px]"
-                  >
-                    English
-                  </button>
-                  <button
-                    type="button"
-                    onClick={() => setLocale("ar")}
-                    className="btn-primary min-w-[100px] sm:min-w-[120px]"
-                  >
-                    العربية
-                  </button>
-                </div>
-              </div>
-              <p className="text-center text-xl font-medium text-white sm:text-2xl">
+            <div className="rounded-2xl border border-white/20 bg-white/15 p-8 shadow-xl backdrop-blur-xl sm:p-10 text-center">
+              <p className="text-xl font-medium text-white sm:text-2xl mb-8">
                 Choose language / اختر اللغة
               </p>
+              <div className="flex flex-col sm:flex-row gap-4 justify-center">
+                <button
+                  type="button"
+                  onClick={() => setLocale("en")}
+                  className="btn-primary min-w-[100px] sm:min-w-[120px]"
+                >
+                  English
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setLocale("ar")}
+                  className="btn-primary min-w-[100px] sm:min-w-[120px]"
+                >
+                  العربية
+                </button>
+              </div>
             </div>
           </div>
         </div>

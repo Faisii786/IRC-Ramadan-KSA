@@ -5,10 +5,6 @@ import { LocaleProvider } from "./LocaleProvider";
 export const metadata: Metadata = {
   title: "Annual Ramadan Suhoor | Attendance Confirmation",
   description: "Confirm your attendance for the Annual Ramadan Suhoor gathering.",
-  icons: {
-    icon: "/icons/logo.png",
-    apple: "/icons/logo.png",
-  },
 };
 
 export default function RootLayout({
@@ -19,8 +15,6 @@ export default function RootLayout({
   return (
     <html lang="en" suppressHydrationWarning>
       <head>
-        <link rel="icon" href="/icons/logo.png" type="image/png" sizes="any" />
-        <link rel="apple-touch-icon" href="/icons/logo.png" />
         <link rel="preconnect" href="https://fonts.googleapis.com" />
         <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="" />
         <link
