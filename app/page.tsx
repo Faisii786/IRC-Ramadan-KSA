@@ -72,26 +72,29 @@ export default function Home() {
         </div>
         <div className="relative z-10 flex min-h-screen items-center justify-center px-4 py-12 sm:py-16">
           <div className="w-full max-w-md">
-            <div className="rounded-2xl border border-white/20 bg-white/15 p-8 shadow-xl backdrop-blur-xl sm:p-10 text-center">
-              <p className="text-xl font-medium text-white sm:text-2xl mb-8">
+            <div className="rounded-2xl border border-white/20 bg-white/15 p-8 shadow-xl backdrop-blur-xl sm:p-10">
+              <div className="flex items-center justify-between gap-4 mb-8">
+                <img src="/icons/logo.png" alt="" className="h-10 w-auto object-contain sm:h-12" />
+                <div className="flex gap-2">
+                  <button
+                    type="button"
+                    onClick={() => setLocale("en")}
+                    className="btn-primary min-w-[100px] sm:min-w-[120px]"
+                  >
+                    English
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => setLocale("ar")}
+                    className="btn-primary min-w-[100px] sm:min-w-[120px]"
+                  >
+                    العربية
+                  </button>
+                </div>
+              </div>
+              <p className="text-center text-xl font-medium text-white sm:text-2xl">
                 Choose language / اختر اللغة
               </p>
-              <div className="flex flex-col sm:flex-row gap-4 justify-center">
-                <button
-                  type="button"
-                  onClick={() => setLocale("en")}
-                  className="btn-primary min-w-[140px]"
-                >
-                  English
-                </button>
-                <button
-                  type="button"
-                  onClick={() => setLocale("ar")}
-                  className="btn-primary min-w-[140px]"
-                >
-                  العربية
-                </button>
-              </div>
             </div>
           </div>
         </div>
@@ -119,27 +122,30 @@ export default function Home() {
       <div className="relative z-10 flex min-h-screen items-center justify-center px-4 py-12 sm:py-16">
         <div className="w-full max-w-md">
           <div className="rounded-2xl border border-white/20 bg-white/15 p-6 shadow-xl backdrop-blur-xl sm:p-8">
-            <div className={`mb-6 flex justify-end gap-1 ${isRtl ? "flex-row-reverse" : ""}`}>
-              <button
-                type="button"
-                onClick={() => setLocale("en")}
-                className={`rounded px-2.5 py-1 text-sm font-medium transition ${
-                  locale === "en" ? "bg-white/25 text-white" : "text-white/70 hover:text-white"
-                }`}
-                aria-label="English"
-              >
-                EN
-              </button>
-              <button
-                type="button"
-                onClick={() => setLocale("ar")}
-                className={`rounded px-2.5 py-1 text-sm font-medium transition ${
-                  locale === "ar" ? "bg-white/25 text-white" : "text-white/70 hover:text-white"
-                }`}
-                aria-label="العربية"
-              >
-                العربية
-              </button>
+            <div className={`mb-6 flex items-center justify-between gap-4 ${isRtl ? "flex-row-reverse" : ""}`}>
+              <img src="/icons/logo.png" alt="" className="h-9 w-auto object-contain sm:h-10" />
+              <div className="flex gap-1">
+                <button
+                  type="button"
+                  onClick={() => setLocale("en")}
+                  className={`rounded px-2.5 py-1 text-sm font-medium transition ${
+                    locale === "en" ? "bg-white/25 text-white" : "text-white/70 hover:text-white"
+                  }`}
+                  aria-label="English"
+                >
+                  EN
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setLocale("ar")}
+                  className={`rounded px-2.5 py-1 text-sm font-medium transition ${
+                    locale === "ar" ? "bg-white/25 text-white" : "text-white/70 hover:text-white"
+                  }`}
+                  aria-label="العربية"
+                >
+                  العربية
+                </button>
+              </div>
             </div>
 
             <header className="mb-8 text-center">

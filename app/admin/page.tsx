@@ -60,9 +60,12 @@ export default function AdminPage() {
           <div className="rounded-2xl border border-white/20 bg-white/15 p-6 shadow-xl backdrop-blur-xl sm:p-8">
             <header className="mb-8">
               <div className={`flex items-center justify-between gap-4 mb-4 ${isRtl ? "flex-row-reverse" : ""}`}>
-                <p className="text-sm font-medium uppercase tracking-wider text-white/80">
-                  {t.adminPanel}
-                </p>
+                <div className="flex items-center gap-3">
+                  <img src="/icons/logo.png" alt="" className="h-8 w-auto object-contain sm:h-9" />
+                  <p className="text-sm font-medium uppercase tracking-wider text-white/80">
+                    {t.adminPanel}
+                  </p>
+                </div>
                 <div className="flex gap-1">
                   <button
                     type="button"
