@@ -4,7 +4,7 @@ import { LocaleProvider } from "./LocaleProvider";
 
 export const metadata: Metadata = {
   title: "Annual Ramadan Suhoor | Attendance Confirmation",
-  description: "Confirm your attendance for the Annual Ramadan Suhoor gathering.",
+  description: "Confirm your attendance for the Annual Ramadan Suhoor — Wednesday 4 March 2026, 10:00 PM – 2:00 AM. Location and entry details shared upon confirmation.",
 };
 
 export default function RootLayout({

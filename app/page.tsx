@@ -145,22 +145,28 @@ export default function Home() {
               </div>
             </div>
 
-            <header className="mb-8 text-center">
-              <h1 className="text-2xl font-semibold tracking-tight text-white sm:text-3xl">
-                {t.title}
-              </h1>
-              <p className="mt-2 text-white">{t.subtitle}</p>
-            </header>
+            {status !== "success" && (
+              <header className="mb-8 text-start">
+                <h1 className="text-2xl font-semibold tracking-tight text-white sm:text-3xl">
+                  {t.title}
+                </h1>
+                <p className="mt-2 text-white">{t.subtitle}</p>
+                <p className="mt-3 text-sm text-white/90">
+                  {t.eventDate} · {t.eventTime}
+                </p>
+              </header>
+            )}
 
             {status === "success" ? (
               <div className="text-center">
-                <div className="mx-auto mb-4 flex h-12 w-12 items-center justify-center rounded-full bg-white/20 backdrop-blur">
-                  <svg className="h-6 w-6 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-                    <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
+                <div className="mx-auto mb-5 flex h-16 w-16 items-center justify-center rounded-full bg-gradient-to-br from-blue-400 via-blue-500 to-blue-600 shadow-lg shadow-blue-500/40 ring-4 ring-blue-400/30">
+                  <svg className="h-8 w-8 text-white" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2.5} strokeLinecap="round" strokeLinejoin="round">
+                    <path d="M20 6L9 17l-5-5" />
                   </svg>
                 </div>
                 <p className="text-lg font-medium text-white">{t.thankYou}</p>
                 <p className="mt-1 text-white">{t.recorded}</p>
+                <p className="mt-3 text-sm text-white/80">{t.eventNote}</p>
                 <button
                   type="button"
                   onClick={() => setStatus("idle")}
@@ -271,6 +277,9 @@ export default function Home() {
                 >
                   {status === "submitting" ? t.submitting : t.submit}
                 </button>
+                <p className="text-center text-xs text-white/80">
+                  {t.eventNote}
+                </p>
               </form>
             )}
           </div>
