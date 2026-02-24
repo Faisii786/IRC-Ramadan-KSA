@@ -173,3 +173,9 @@ select.glass-input option {
   background: #1f2937;
   color: #fff;
 }
+
+[dir="rtl"] select.glass-input {
+  background-position: left 12px center !important;
+  padding-right: 14px;
+  padding-left: 44px;
+}

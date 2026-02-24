@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import "./globals.css";
+import { LocaleProvider } from "./LocaleProvider";
 
 export const metadata: Metadata = {
   title: "Annual Ramadan Suhoor | Attendance Confirmation",
@@ -12,7 +13,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en">
+    <html lang="en" suppressHydrationWarning>
       <head>
         <link rel="preconnect" href="https://fonts.googleapis.com" />
         <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="" />
@@ -22,7 +23,7 @@ export default function RootLayout({
         />
       </head>
       <body className="antialiased">
-        {children}
+        <LocaleProvider>{children}</LocaleProvider>
       </body>
     </html>
   );

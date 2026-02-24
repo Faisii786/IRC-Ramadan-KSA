@@ -2,8 +2,11 @@
 
 import { useState } from "react";
 import { COMPANY_OPTIONS } from "@/lib/submissions";
+import { formTranslations } from "@/lib/translations";
+import { useLocale } from "./LocaleProvider";
 
 export default function Home() {
+  const { locale, setLocale } = useLocale();
   const [employeeName, setEmployeeName] = useState("");
   const [employeeId, setEmployeeId] = useState("");
   const [company, setCompany] = useState("");
@@ -11,8 +14,12 @@ export default function Home() {
   const [status, setStatus] = useState<"idle" | "submitting" | "success" | "error">("idle");
   const [errorMessage, setErrorMessage] = useState("");
 
+  const isRtl = locale === "ar";
+  const t = locale ? formTranslations[locale] : formTranslations.en;
+
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
+    if (!t) return;
     setStatus("submitting");
     setErrorMessage("");
 
@@ -31,7 +38,7 @@ export default function Home() {
 
       if (!res.ok) {
         setStatus("error");
-        setErrorMessage(data.error || "Submission failed.");
+        setErrorMessage(data.error || t.errorSubmit);
         return;
       }
 
@@ -42,13 +49,59 @@ export default function Home() {
       setAttendance("");
     } catch {
       setStatus("error");
-      setErrorMessage("Network error. Please try again.");
+      setErrorMessage(t.errorNetwork);
     }
   }
 
+  // First screen: choose language (same video + glass UI)
+  if (locale === null) {
+    return (
+      <div className="relative min-h-screen" dir="ltr">
+        <div className="fixed inset-0 z-0">
+          <video
+            autoPlay
+            loop
+            muted
+            playsInline
+            className="h-full w-full object-cover"
+            aria-hidden
+          >
+            <source src="/videos/ramadan2.mp4" type="video/mp4" />
+          </video>
+          <div className="absolute inset-0 bg-black/50" aria-hidden />
+        </div>
+        <div className="relative z-10 flex min-h-screen items-center justify-center px-4 py-12 sm:py-16">
+          <div className="w-full max-w-md">
+            <div className="rounded-2xl border border-white/20 bg-white/15 p-8 shadow-xl backdrop-blur-xl sm:p-10 text-center">
+              <p className="text-xl font-medium text-white sm:text-2xl mb-8">
+                Choose language / اختر اللغة
+              </p>
+              <div className="flex flex-col sm:flex-row gap-4 justify-center">
+                <button
+                  type="button"
+                  onClick={() => setLocale("en")}
+                  className="btn-primary min-w-[140px]"
+                >
+                  English
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setLocale("ar")}
+                  className="btn-primary min-w-[140px]"
+                >
+                  العربية
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  // Form screen
   return (
-    <div className="relative min-h-screen">
-      {/* Background video */}
+    <div className="relative min-h-screen" dir={isRtl ? "rtl" : "ltr"}>
       <div className="fixed inset-0 z-0">
         <video
           autoPlay
@@ -66,14 +119,36 @@ export default function Home() {
       <div className="relative z-10 flex min-h-screen items-center justify-center px-4 py-12 sm:py-16">
         <div className="w-full max-w-md">
           <div className="rounded-2xl border border-white/20 bg-white/15 p-6 shadow-xl backdrop-blur-xl sm:p-8">
+            <div className={`mb-6 flex justify-end gap-1 ${isRtl ? "flex-row-reverse" : ""}`}>
+              <button
+                type="button"
+                onClick={() => setLocale("en")}
+                className={`rounded px-2.5 py-1 text-sm font-medium transition ${
+                  locale === "en" ? "bg-white/25 text-white" : "text-white/70 hover:text-white"
+                }`}
+                aria-label="English"
+              >
+                EN
+              </button>
+              <button
+                type="button"
+                onClick={() => setLocale("ar")}
+                className={`rounded px-2.5 py-1 text-sm font-medium transition ${
+                  locale === "ar" ? "bg-white/25 text-white" : "text-white/70 hover:text-white"
+                }`}
+                aria-label="العربية"
+              >
+                العربية
+              </button>
+            </div>
+
             <header className="mb-8 text-center">
               <h1 className="text-2xl font-semibold tracking-tight text-white sm:text-3xl">
-                Suhoor Attendance
+                {t.title}
               </h1>
-              <p className="mt-2 text-white">
-                Confirm your attendance.
-              </p>
+              <p className="mt-2 text-white">{t.subtitle}</p>
             </header>
+
             {status === "success" ? (
               <div className="text-center">
                 <div className="mx-auto mb-4 flex h-12 w-12 items-center justify-center rounded-full bg-white/20 backdrop-blur">
@@ -81,28 +156,28 @@ export default function Home() {
                     <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
                   </svg>
                 </div>
-                <p className="text-lg font-medium text-white">Thank you</p>
-                <p className="mt-1 text-white">Your response has been recorded.</p>
+                <p className="text-lg font-medium text-white">{t.thankYou}</p>
+                <p className="mt-1 text-white">{t.recorded}</p>
                 <button
                   type="button"
                   onClick={() => setStatus("idle")}
                   className="btn-primary mt-6"
                 >
-                  Submit another
+                  {t.submitAnother}
                 </button>
               </div>
             ) : (
               <form onSubmit={handleSubmit} className="space-y-5">
                 <div>
                   <label htmlFor="employeeName" className="mb-1.5 block text-sm font-medium text-white">
-                    Employee name
+                    {t.employeeName}
                   </label>
                   <input
                     id="employeeName"
                     type="text"
                     value={employeeName}
                     onChange={(e) => setEmployeeName(e.target.value)}
-                    placeholder="Full name"
+                    placeholder={locale === "ar" ? "الاسم الكامل" : "Full name"}
                     required
                     disabled={status === "submitting"}
                     autoComplete="name"
@@ -112,14 +187,14 @@ export default function Home() {
 
                 <div>
                   <label htmlFor="employeeId" className="mb-1.5 block text-sm font-medium text-white">
-                    Employee ID
+                    {t.employeeId}
                   </label>
                   <input
                     id="employeeId"
                     type="text"
                     value={employeeId}
                     onChange={(e) => setEmployeeId(e.target.value)}
-                    placeholder="e.g. EMP001"
+                    placeholder={locale === "ar" ? "مثال: 001" : "e.g. EMP001"}
                     required
                     disabled={status === "submitting"}
                     autoComplete="off"
@@ -129,7 +204,7 @@ export default function Home() {
 
                 <div>
                   <label htmlFor="company" className="mb-1.5 block text-sm font-medium text-white">
-                    Company
+                    {t.company}
                   </label>
                   <select
                     id="company"
@@ -139,7 +214,7 @@ export default function Home() {
                     disabled={status === "submitting"}
                     className="glass-input"
                   >
-                    <option value="">Select company</option>
+                    <option value="">{t.selectCompany}</option>
                     {COMPANY_OPTIONS.map((opt) => (
                       <option key={opt} value={opt}>
                         {opt}
@@ -150,7 +225,7 @@ export default function Home() {
 
                 <div>
                   <span className="mb-2 block text-sm font-medium text-white">
-                    Will you attend?
+                    {t.willYouAttend}
                   </span>
                   <div className="flex gap-6">
                     <label className="flex cursor-pointer items-center gap-2">
@@ -163,7 +238,7 @@ export default function Home() {
                         disabled={status === "submitting"}
                         className="h-4 w-4 accent-white"
                       />
-                      <span className="text-white">Yes</span>
+                      <span className="text-white">{t.yes}</span>
                     </label>
                     <label className="flex cursor-pointer items-center gap-2">
                       <input
@@ -175,7 +250,7 @@ export default function Home() {
                         disabled={status === "submitting"}
                         className="h-4 w-4 accent-white"
                       />
-                      <span className="text-white">No</span>
+                      <span className="text-white">{t.no}</span>
                     </label>
                   </div>
                 </div>
@@ -191,7 +266,7 @@ export default function Home() {
                   disabled={status === "submitting" || attendance === ""}
                   className="btn-primary w-full"
                 >
-                  {status === "submitting" ? "Submitting…" : "Submit"}
+                  {status === "submitting" ? t.submitting : t.submit}
                 </button>
               </form>
             )}
