@@ -36,14 +36,21 @@ export default function AdminPage() {
     if (!authenticated) return;
     async function load() {
       try {
+        setError("");
         const res = await fetch("/api/submissions", { cache: "no-store" });
-        const data = await res.json();
+        let data: { error?: string; submissions?: Submission[] } = {};
+        try {
+          data = await res.json();
+        } catch {
+          setError(res.ok ? t.errorLoad : `${t.errorLoad} (${res.status})`);
+          return;
+        }
         if (!res.ok) {
           setError(data.error || t.errorLoad);
           return;
         }
         setSubmissions(data.submissions ?? []);
-      } catch {
+      } catch (err) {
         setError(t.errorLoad);
       } finally {
         setLoading(false);
@@ -263,7 +270,7 @@ export default function AdminPage() {
               {loading ? (
                 <div className="p-12 text-center text-white/80">{t.loading}</div>
               ) : error ? (
-                <div className="p-8 text-center text-red-200">{t.errorLoad}</div>
+                <div className="p-8 text-center text-red-200">{error}</div>
               ) : submissions.length === 0 ? (
                 <div className="p-12 text-center text-white/80">{t.noSubmissions}</div>
               ) : (
