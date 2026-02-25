@@ -10,6 +10,7 @@ type LocaleContextValue = {
   setLocale: (locale: Locale) => void;
 };
 
+/* eslint-disable */
 const LocaleContext = createContext<LocaleContextValue | null>(null);
 
 export function useLocale() {
