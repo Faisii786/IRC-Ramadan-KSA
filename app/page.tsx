@@ -38,7 +38,9 @@ export default function Home() {
 
       if (!res.ok) {
         setStatus("error");
-        setErrorMessage(data.error || t.errorSubmit);
+        setErrorMessage(
+          data.error === "duplicate_employee_id" ? t.errorDuplicateId : (data.error || t.errorSubmit)
+        );
         return;
       }
 
@@ -167,13 +169,6 @@ export default function Home() {
                 <p className="text-lg font-medium text-white">{t.thankYou}</p>
                 <p className="mt-1 text-white">{t.recorded}</p>
                 <p className="mt-3 text-sm text-white/80">{t.eventNote}</p>
-                <button
-                  type="button"
-                  onClick={() => setStatus("idle")}
-                  className="btn-primary mt-6"
-                >
-                  {t.submitAnother}
-                </button>
               </div>
             ) : (
               <form onSubmit={handleSubmit} className="space-y-5">

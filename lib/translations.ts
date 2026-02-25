@@ -19,6 +19,7 @@ export const formTranslations = {
     submitAnother: "Submit another",
     errorSubmit: "Submission failed.",
     errorNetwork: "Network error. Please try again.",
+    errorDuplicateId: "This Employee ID has already been submitted.",
   },
   ar: {
     title: "سحور رمضان السنوي",
@@ -40,6 +41,7 @@ export const formTranslations = {
     submitAnother: "إرسال آخر",
     errorSubmit: "فشل الإرسال.",
     errorNetwork: "خطأ في الشبكة. يرجى المحاولة مرة أخرى.",
+    errorDuplicateId: "تم إرسال هذا الرقم مسبقاً.",
   },
 } as const;
 

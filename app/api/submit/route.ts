@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
-import { addSubmission, COMPANY_OPTIONS } from "@/lib/submissions";
+import { COMPANY_OPTIONS } from "@/lib/submissions";
+import { addSubmission, hasEmployeeIdSubmitted } from "@/lib/db";
 
 export async function POST(request: Request) {
   try {
@@ -31,16 +32,28 @@ export async function POST(request: Request) {
       );
     }
 
-    const submission = addSubmission({
+    const trimmedId = String(employeeId).trim();
+    const alreadySubmitted = await hasEmployeeIdSubmitted(trimmedId);
+    if (alreadySubmitted) {
+      return NextResponse.json(
+        { error: "duplicate_employee_id" },
+        { status: 400 }
+      );
+    }
+
+    const data = {
       employeeName: String(employeeName).trim(),
-      employeeId: String(employeeId).trim(),
+      employeeId: trimmedId,
       company,
       attendance,
-    });
+      submittedAt: new Date().toISOString(),
+    };
+
+    const { id } = await addSubmission(data);
 
     return NextResponse.json({
       success: true,
-      id: submission.id,
+      id,
       message: "Thank you. Your response has been recorded.",
     });
   } catch (e) {

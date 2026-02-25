@@ -1,9 +1,9 @@
 import { NextResponse } from "next/server";
-import { getSubmissions } from "@/lib/submissions";
+import { getSubmissions } from "@/lib/db";
 
 export async function GET() {
   try {
-    const submissions = getSubmissions();
+    const submissions = await getSubmissions();
     return NextResponse.json({ submissions });
   } catch (e) {
     console.error("Submissions fetch error:", e);

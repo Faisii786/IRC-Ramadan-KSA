@@ -6,7 +6,7 @@ import { commonTranslations } from "@/lib/translations";
 import { useLocale } from "@/app/LocaleProvider";
 
 const ADMIN_AUTH_KEY = "suhoor_admin_auth";
-const ADMIN_PASSWORD = "ramadan@irc78690";
+const ADMIN_PASSWORD = "yadu@irc123";
 
 function isAuthenticated(): boolean {
   if (typeof window === "undefined") return false;

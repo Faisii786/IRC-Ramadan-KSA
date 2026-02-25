@@ -32,6 +32,11 @@ yarn-error.log*
 
 # env files (can opt-in for committing if needed)
 .env*
+# Firebase service account key (keep private)
+irc_ramadan_firebase.json
+
+# local sqlite db (data persists here; remove this line if you want to commit/backup the db)
+data/
 
 # vercel
 .vercel
