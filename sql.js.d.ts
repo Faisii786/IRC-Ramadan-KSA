@@ -14,9 +14,12 @@ declare module "sql.js" {
     free(): void;
   }
 
+  /** Return type of initSqlJs() - use this instead of typeof import("sql.js") */
+  export type InitSqlJsResult = {
+    Database: new (data?: BufferSource) => Database;
+  };
+
   export default function initSqlJs(config?: {
     locateFile?: (file: string) => string;
-  }): Promise<{
-    Database: new (data?: BufferSource) => Database;
-  }>;
+  }): Promise<InitSqlJsResult>;
 }

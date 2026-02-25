@@ -3,20 +3,20 @@
  * Data is stored in data/submissions.db and persists (never auto-deleted).
  */
 
-import initSqlJs, { type Database } from "sql.js";
+import initSqlJs, { type Database, type InitSqlJsResult } from "sql.js";
 import path from "path";
 import fs from "fs";
 
 const DATA_DIR = path.join(process.cwd(), "data");
 const DB_PATH = path.join(DATA_DIR, "submissions.db");
 
-let sqlJsInit: (() => Promise<typeof import("sql.js")>) | null = null;
+let sqlJsInit: (() => Promise<InitSqlJsResult>) | null = null;
 
 function getSqlJs() {
   if (!sqlJsInit) {
     sqlJsInit = () =>
       initSqlJs({
-        locateFile: (file) =>
+        locateFile: (file: string) =>
           path.join(process.cwd(), "node_modules", "sql.js", "dist", file),
       });
   }
@@ -29,7 +29,7 @@ function ensureDataDir() {
   }
 }
 
-function loadDb(SQL: Awaited<ReturnType<typeof initSqlJs>>): Database {
+function loadDb(SQL: InitSqlJsResult): Database {
   ensureDataDir();
   if (fs.existsSync(DB_PATH)) {
     const buffer = fs.readFileSync(DB_PATH);
