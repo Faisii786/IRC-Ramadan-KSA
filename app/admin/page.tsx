@@ -5,8 +5,21 @@ import type { Submission } from "@/lib/submissions";
 import { commonTranslations } from "@/lib/translations";
 import { useLocale } from "@/app/LocaleProvider";
 
+const ADMIN_AUTH_KEY = "suhoor_admin_auth";
+const ADMIN_PASSWORD = "ramadan@irc78690";
+
+function isAuthenticated(): boolean {
+  if (typeof window === "undefined") return false;
+  return !!(localStorage.getItem(ADMIN_AUTH_KEY) || sessionStorage.getItem(ADMIN_AUTH_KEY));
+}
+
 export default function AdminPage() {
   const { locale, setLocale } = useLocale();
+  const [authenticated, setAuthenticated] = useState(false);
+  const [authChecked, setAuthChecked] = useState(false);
+  const [password, setPassword] = useState("");
+  const [rememberMe, setRememberMe] = useState(false);
+  const [loginError, setLoginError] = useState("");
   const [submissions, setSubmissions] = useState<Submission[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
@@ -15,6 +28,12 @@ export default function AdminPage() {
   const t = locale ? commonTranslations[locale] : commonTranslations.en;
 
   useEffect(() => {
+    setAuthChecked(true);
+    setAuthenticated(isAuthenticated());
+  }, []);
+
+  useEffect(() => {
+    if (!authenticated) return;
     async function load() {
       try {
         const res = await fetch("/api/submissions");
@@ -28,7 +47,29 @@ export default function AdminPage() {
       }
     }
     load();
-  }, []);
+  }, [authenticated]);
+
+  function handleLogin(e: React.FormEvent) {
+    e.preventDefault();
+    setLoginError("");
+    if (password !== ADMIN_PASSWORD) {
+      setLoginError(t.wrongPassword);
+      return;
+    }
+    if (rememberMe) {
+      localStorage.setItem(ADMIN_AUTH_KEY, "1");
+    } else {
+      sessionStorage.setItem(ADMIN_AUTH_KEY, "1");
+    }
+    setAuthenticated(true);
+    setPassword("");
+  }
+
+  function handleLogout() {
+    localStorage.removeItem(ADMIN_AUTH_KEY);
+    sessionStorage.removeItem(ADMIN_AUTH_KEY);
+    setAuthenticated(false);
+  }
 
   function formatDate(iso: string) {
     const d = new Date(iso);
@@ -38,9 +79,96 @@ export default function AdminPage() {
     });
   }
 
+  if (!authChecked) {
+    return (
+      <div className="relative flex min-h-screen items-center justify-center">
+        <div className="text-white/80">{t.loading}</div>
+      </div>
+    );
+  }
+
+  if (!authenticated) {
+    return (
+      <div className="relative min-h-screen" dir={isRtl ? "rtl" : "ltr"}>
+        <div className="fixed inset-0 z-0">
+          <video
+            autoPlay
+            loop
+            muted
+            playsInline
+            className="h-full w-full object-cover"
+            aria-hidden
+          >
+            <source src="/videos/ramadan1.mp4" type="video/mp4" />
+          </video>
+          <div className="absolute inset-0 bg-black/50" aria-hidden />
+        </div>
+        <div className="relative z-10 flex min-h-screen items-center justify-center px-4 py-12 sm:py-16">
+          <div className="w-full max-w-md">
+            <div className="rounded-2xl border border-white/20 bg-white/15 p-6 shadow-xl backdrop-blur-xl sm:p-8">
+              <div className={`mb-6 flex items-center justify-between gap-4 ${isRtl ? "flex-row-reverse" : ""}`}>
+                <img src="/icons/logo.png" alt="" className="h-8 w-auto object-contain" />
+                <div className="flex gap-1">
+                  <button
+                    type="button"
+                    onClick={() => setLocale("en")}
+                    className={`rounded px-2.5 py-1 text-sm font-medium ${locale === "en" ? "bg-white/25 text-white" : "text-white/70 hover:text-white"}`}
+                  >
+                    EN
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => setLocale("ar")}
+                    className={`rounded px-2.5 py-1 text-sm font-medium ${locale === "ar" ? "bg-white/25 text-white" : "text-white/70 hover:text-white"}`}
+                  >
+                    العربية
+                  </button>
+                </div>
+              </div>
+              <p className="mb-6 text-sm font-medium uppercase tracking-wider text-white/80">
+                {t.adminPanel}
+              </p>
+              <form onSubmit={handleLogin} className="space-y-4">
+                <div>
+                  <label htmlFor="admin-password" className="mb-1.5 block text-sm font-medium text-white">
+                    {t.adminPassword}
+                  </label>
+                  <input
+                    id="admin-password"
+                    type="password"
+                    value={password}
+                    onChange={(e) => setPassword(e.target.value)}
+                    placeholder=""
+                    required
+                    autoComplete="current-password"
+                    className="glass-input"
+                  />
+                </div>
+                <label className="flex cursor-pointer items-center gap-2">
+                  <input
+                    type="checkbox"
+                    checked={rememberMe}
+                    onChange={(e) => setRememberMe(e.target.checked)}
+                    className="h-4 w-4 rounded accent-white"
+                  />
+                  <span className="text-sm text-white">{t.rememberMe}</span>
+                </label>
+                {loginError && (
+                  <p className="text-sm text-red-200">{loginError}</p>
+                )}
+                <button type="submit" className="btn-primary w-full">
+                  {t.signIn}
+                </button>
+              </form>
+            </div>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="relative min-h-screen" dir={isRtl ? "rtl" : "ltr"}>
-      {/* Same background video as form page */}
       <div className="fixed inset-0 z-0">
         <video
           autoPlay
@@ -66,23 +194,30 @@ export default function AdminPage() {
                     {t.adminPanel}
                   </p>
                 </div>
-                <div className="flex gap-1">
+                <div className="flex items-center gap-3">
                   <button
                     type="button"
-                    onClick={() => setLocale("en")}
-                    className={`rounded px-2.5 py-1 text-sm font-medium transition ${locale === "en" ? "bg-white/25 text-white" : "text-white/70 hover:text-white"
-                      }`}
+                    onClick={handleLogout}
+                    className="rounded px-2.5 py-1 text-sm font-medium text-white/70 hover:text-white transition"
                   >
-                    EN
+                    {t.logOut}
                   </button>
-                  <button
-                    type="button"
-                    onClick={() => setLocale("ar")}
-                    className={`rounded px-2.5 py-1 text-sm font-medium transition ${locale === "ar" ? "bg-white/25 text-white" : "text-white/70 hover:text-white"
-                      }`}
-                  >
-                    العربية
-                  </button>
+                  <div className="flex gap-1">
+                    <button
+                      type="button"
+                      onClick={() => setLocale("en")}
+                      className={`rounded px-2.5 py-1 text-sm font-medium transition ${locale === "en" ? "bg-white/25 text-white" : "text-white/70 hover:text-white"}`}
+                    >
+                      EN
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => setLocale("ar")}
+                      className={`rounded px-2.5 py-1 text-sm font-medium transition ${locale === "ar" ? "bg-white/25 text-white" : "text-white/70 hover:text-white"}`}
+                    >
+                      العربية
+                    </button>
+                  </div>
                 </div>
               </div>
               <h1 className="text-2xl font-semibold tracking-tight text-white sm:text-3xl">
@@ -121,10 +256,11 @@ export default function AdminPage() {
                           <td className="px-4 py-3">{s.company}</td>
                           <td className="px-4 py-3">
                             <span
-                              className={`inline-flex rounded-md px-2 py-0.5 text-xs font-medium ${s.attendance === "Yes"
-                                ? "bg-emerald-400/30 text-emerald-200"
-                                : "bg-white/20 text-white/90"
-                                }`}
+                              className={`inline-flex rounded-md px-2 py-0.5 text-xs font-medium ${
+                                s.attendance === "Yes"
+                                  ? "bg-emerald-400/30 text-emerald-200"
+                                  : "bg-white/20 text-white/90"
+                              }`}
                             >
                               {s.attendance}
                             </span>

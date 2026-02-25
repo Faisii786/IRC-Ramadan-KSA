@@ -58,6 +58,11 @@ export const commonTranslations = {
     company: "Company",
     attendance: "Attendance",
     submitted: "Submitted",
+    adminPassword: "Password",
+    rememberMe: "Remember me",
+    signIn: "Sign in",
+    wrongPassword: "Wrong password.",
+    logOut: "Log out",
   },
   ar: {
     adminPanel: "لوحة الإدارة",
@@ -73,6 +78,11 @@ export const commonTranslations = {
     company: "الشركة",
     attendance: "الحضور",
     submitted: "التاريخ",
+    adminPassword: "كلمة المرور",
+    rememberMe: "تذكرني",
+    signIn: "دخول",
+    wrongPassword: "كلمة مرور غير صحيحة.",
+    logOut: "تسجيل الخروج",
   },
 } as const;
 
