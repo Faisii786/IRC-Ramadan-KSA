@@ -36,12 +36,15 @@ export default function AdminPage() {
     if (!authenticated) return;
     async function load() {
       try {
-        const res = await fetch("/api/submissions");
-        if (!res.ok) throw new Error("Failed to load");
+        const res = await fetch("/api/submissions", { cache: "no-store" });
         const data = await res.json();
-        setSubmissions(data.submissions);
+        if (!res.ok) {
+          setError(data.error || t.errorLoad);
+          return;
+        }
+        setSubmissions(data.submissions ?? []);
       } catch {
-        setError("load_failed");
+        setError(t.errorLoad);
       } finally {
         setLoading(false);
       }
@@ -77,6 +80,27 @@ export default function AdminPage() {
       dateStyle: "medium",
       timeStyle: "short",
     });
+  }
+
+  function exportToExcel() {
+    if (submissions.length === 0) return;
+    const headers = [t.name, t.employeeId, t.company, t.attendance, t.submitted];
+    const escape = (v: string) => {
+      const s = String(v);
+      if (/[",\n\r]/.test(s)) return `"${s.replace(/"/g, '""')}"`;
+      return s;
+    };
+    const rows = submissions.map((s) =>
+      [s.employeeName, s.employeeId, s.company, s.attendance, formatDate(s.submittedAt)].map(escape).join(",")
+    );
+    const csv = [headers.join(","), ...rows].join("\r\n");
+    const blob = new Blob(["\uFEFF" + csv], { type: "text/csv;charset=utf-8" });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = `suhoor-submissions-${new Date().toISOString().slice(0, 10)}.csv`;
+    a.click();
+    URL.revokeObjectURL(url);
   }
 
   if (!authChecked) {
@@ -224,6 +248,15 @@ export default function AdminPage() {
                 {t.submissions}
               </h1>
               <p className="mt-1 text-white/90">{t.submissionsDesc}</p>
+              {submissions.length > 0 && (
+                <button
+                  type="button"
+                  onClick={exportToExcel}
+                  className="mt-4 rounded-lg border border-white/30 bg-white/10 px-4 py-2 text-sm font-medium text-white backdrop-blur transition hover:bg-white/20"
+                >
+                  {t.exportToExcel}
+                </button>
+              )}
             </header>
 
             <div className="overflow-hidden rounded-xl border border-white/20 bg-black/20 backdrop-blur">

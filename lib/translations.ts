@@ -65,6 +65,7 @@ export const commonTranslations = {
     signIn: "Sign in",
     wrongPassword: "Wrong password.",
     logOut: "Log out",
+    exportToExcel: "Export to Excel",
   },
   ar: {
     adminPanel: "لوحة الإدارة",
@@ -85,6 +86,7 @@ export const commonTranslations = {
     signIn: "دخول",
     wrongPassword: "كلمة مرور غير صحيحة.",
     logOut: "تسجيل الخروج",
+    exportToExcel: "تصدير إلى Excel",
   },
 } as const;
 

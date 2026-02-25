@@ -1,11 +1,11 @@
 import { NextResponse } from "next/server";
 import { COMPANY_OPTIONS } from "@/lib/submissions";
-import { addSubmission, hasEmployeeIdSubmitted } from "@/lib/db";
+import { getSheetsClient, getSheetsReadClient, getSpreadsheetId, SHEET_RANGE } from "@/lib/sheets";
 
 export async function POST(request: Request) {
   try {
     const body = await request.json();
-    const { employeeName, employeeId, company, attendance } = body;
+    const { employeeName, employeeId, company, attendance, language } = body;
 
     if (!employeeName?.trim()) {
       return NextResponse.json(
@@ -33,27 +33,53 @@ export async function POST(request: Request) {
     }
 
     const trimmedId = String(employeeId).trim();
-    const alreadySubmitted = await hasEmployeeIdSubmitted(trimmedId);
-    if (alreadySubmitted) {
+    const spreadsheetId = getSpreadsheetId();
+    const sheetsRead = getSheetsReadClient();
+
+    const existing = await sheetsRead.spreadsheets.values.get({
+      spreadsheetId,
+      range: "Sheet1!C:C",
+    });
+    const rawIds = (existing.data.values || []) as string[][];
+    const dataRows = rawIds.length > 1 ? rawIds.slice(1) : rawIds;
+    const ids = dataRows
+      .flat()
+      .map((s) => String(s ?? "").trim())
+      .filter(Boolean);
+    if (ids.some((id) => id === trimmedId)) {
       return NextResponse.json(
         { error: "duplicate_employee_id" },
         { status: 400 }
       );
     }
 
-    const data = {
-      employeeName: String(employeeName).trim(),
-      employeeId: trimmedId,
-      company,
-      attendance,
-      submittedAt: new Date().toISOString(),
-    };
+    const userAgent = request.headers.get("user-agent") ?? "";
+    const forwarded = request.headers.get("x-forwarded-for");
+    const ip = forwarded ? String(forwarded).split(",")[0].trim() : (request.headers.get("x-real-ip") ?? "");
 
-    const { id } = await addSubmission(data);
+    const sheets = getSheetsClient();
+    await sheets.spreadsheets.values.append({
+      spreadsheetId,
+      range: SHEET_RANGE,
+      valueInputOption: "USER_ENTERED",
+      requestBody: {
+        values: [
+          [
+            new Date().toISOString(),
+            String(employeeName).trim(),
+            trimmedId,
+            company,
+            attendance,
+            language === "ar" ? "ar" : "en",
+            userAgent,
+            ip,
+          ],
+        ],
+      },
+    });
 
     return NextResponse.json({
       success: true,
-      id,
       message: "Thank you. Your response has been recorded.",
     });
   } catch (e) {

@@ -32,6 +32,7 @@ export default function Home() {
           employeeId,
           company,
           attendance,
+          language: locale === "ar" ? "ar" : "en",
         }),
       });
       const data = await res.json();
