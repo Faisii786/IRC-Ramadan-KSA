@@ -1,10 +1,26 @@
 import { google } from "googleapis";
 
+function normalizePrivateKey(raw: string | undefined): string {
+  if (!raw || typeof raw !== "string") return "";
+  let key = raw
+    .replace(/\\n/g, "\n")
+    .replace(/\r\n/g, "\n")
+    .replace(/\r/g, "\n")
+    .trim();
+  if ((key.startsWith('"') && key.endsWith('"')) || (key.startsWith("'") && key.endsWith("'"))) {
+    key = key.slice(1, -1).trim();
+  }
+  return key;
+}
+
 function getAuth(scopes: string[]) {
-  const email = process.env.GOOGLE_CLIENT_EMAIL;
-  const key = process.env.GOOGLE_PRIVATE_KEY?.replace(/\\n/g, "\n");
+  const email = process.env.GOOGLE_CLIENT_EMAIL?.trim();
+  const key = normalizePrivateKey(process.env.GOOGLE_PRIVATE_KEY);
   if (!email || !key) {
     throw new Error("Missing GOOGLE_CLIENT_EMAIL or GOOGLE_PRIVATE_KEY");
+  }
+  if (!key.includes("BEGIN PRIVATE KEY")) {
+    throw new Error("GOOGLE_PRIVATE_KEY must be a PEM string (BEGIN PRIVATE KEY ... END PRIVATE KEY)");
   }
   return new google.auth.JWT({
     email,
